@@ -26,9 +26,7 @@ from services.auth import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-# ─────────────────────────────────────────────────────
-# REQUEST/RESPONSE SHAPES SPECIFIC TO THIS FILE
-# ─────────────────────────────────────────────────────
+#request response models for google login and password reset
 
 class GoogleLoginRequest(BaseModel):
     id_token: str
@@ -44,9 +42,7 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
-# ─────────────────────────────────────────────────────
-# REGISTER
-# ─────────────────────────────────────────────────────
+#registeration endpoints
 
 @router.post("/register/student", response_model=StudentOut)
 def register_student(payload: StudentCreate, db: Session = Depends(get_db)):
@@ -89,16 +85,11 @@ def register_admin(payload: AdminCreate, db: Session = Depends(get_db)):
     return admin
 
 
-# ─────────────────────────────────────────────────────
-# LOGIN — email + password
-# ─────────────────────────────────────────────────────
+#login endpoint with email and password,return access token and role of user
 
 @router.post("/login", response_model=TokenResponse)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    """
-    form_data.username is actually the email (OAuth2 form spec calls it 'username').
-    Checks Student, Admin, Superuser tables — whichever one matches.
-    """
+    #form_data.username is email btw
     user, role = find_user_by_email(db, form_data.username)
 
     if not user or not verify_password(form_data.password, user.password_hash):
@@ -108,9 +99,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {"access_token": token, "token_type": "bearer", "role": role}
 
 
-# ─────────────────────────────────────────────────────
-# GOOGLE LOGIN
-# ─────────────────────────────────────────────────────
+#google login endpoint, frontend sends id_token from google and role of user, backend verifies the token and returns access token if user exists
 
 @router.post("/google-login", response_model=TokenResponse)
 def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
@@ -120,10 +109,7 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
       2. Google returns an id_token to the frontend
       3. Frontend sends that id_token here, along with which role screen they're on
 
-    We verify the token is real, then either log the user in (if their email
-    already exists) or tell the frontend they need to register first.
-    We do NOT auto-register here — registration needs roll_no/course/etc,
-    which Google doesn't provide.
+    only using google auth for login wala flow,not for registration as it requires additional info
     """
     google_data = verify_google_token(payload.id_token)
     email = google_data["email"]
@@ -146,17 +132,11 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer", "role": role}
 
 
-# ─────────────────────────────────────────────────────
-# FORGOT PASSWORD — request a reset link
-# ─────────────────────────────────────────────────────
+#forgot password endpoint for reset link
 
 @router.post("/forgot-password")
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    """
-    Always returns the same generic message, whether or not the email exists.
-    This stops attackers from using this endpoint to discover which emails
-    are registered in the system.
-    """
+   
     user, role = find_user_by_email(db, payload.email)
 
     if user:
@@ -166,10 +146,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     return {"message": "If an account exists for this email, a reset link has been sent."}
 
 
-# ─────────────────────────────────────────────────────
-# RESET PASSWORD — actually set the new password
-# ─────────────────────────────────────────────────────
-
+#reset password endpoint,where we set new password
 @router.post("/reset-password")
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
     token_data = verify_password_reset_token(payload.token)
@@ -186,10 +163,7 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     update_user_password(db, user, role, payload.new_password)
     return {"message": "Password has been reset successfully. You can now log in."}
 
-
-# ─────────────────────────────────────────────────────
-# CURRENT USER — useful for the frontend to check who's logged in
-# ─────────────────────────────────────────────────────
+#return current user info to check who is logged in
 
 @router.get("/me")
 def get_me(current_user=Depends(get_current_user)):

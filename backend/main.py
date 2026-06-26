@@ -4,7 +4,7 @@ from sqlalchemy import text
 from routes.auth import router as auth_router
 from services import auth
 from database import engine, Base, get_db
-from models import test_models 
+
 
 
 Base.metadata.create_all(bind=engine)

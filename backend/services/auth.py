@@ -1,6 +1,6 @@
 import os
 import smtplib
-import secrets
+
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from typing import Optional
@@ -22,11 +22,9 @@ router = APIRouter(
     prefix="/auth",
     tags=["Auth"]
 )
-# ─────────────────────────────────────────────────────
-# CONFIG — read from .env
-# ─────────────────────────────────────────────────────
+#read config from .env file
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-dev-secret-change-this")
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))
 RESET_TOKEN_EXPIRE_MINUTES = int(os.getenv("RESET_TOKEN_EXPIRE_MINUTES", 30))
@@ -43,10 +41,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
-# ─────────────────────────────────────────────────────
-# PASSWORD HASHING
-# ─────────────────────────────────────────────────────
 
+#password hashing and verification
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -55,9 +51,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-# ─────────────────────────────────────────────────────
-# JWT — ACCESS TOKENS (login sessions)
-# ─────────────────────────────────────────────────────
+# access token using jwt for login session
 
 def create_access_token(data: dict) -> str:
     """
@@ -80,15 +74,10 @@ def decode_token(token: str) -> dict:
         )
 
 
-# ─────────────────────────────────────────────────────
-# JWT — PASSWORD RESET TOKENS (short-lived, separate type)
-# ─────────────────────────────────────────────────────
+#jwt tokens for password reset
 
 def create_password_reset_token(email: str, role: str) -> str:
-    """
-    Short-lived token, deliberately separate from access tokens.
-    type='reset' stops a reset token being reused as a login token.
-    """
+   #type= reset avoids it from using as login token
     expire = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
     payload = {"sub": email, "role": role, "type": "reset", "exp": expire}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -101,15 +90,10 @@ def verify_password_reset_token(token: str) -> dict:
     return payload  # {"sub": email, "role": role, "type": "reset", "exp": ...}
 
 
-# ─────────────────────────────────────────────────────
-# LOOKUP HELPERS — check all 3 tables by email
-# ─────────────────────────────────────────────────────
+#check 3 tables for user by email and return (userobj,role) or(None,None) if not found
 
 def find_user_by_email(db: Session, email: str):
-    """
-    Returns (user_object, role_string) or (None, None) if not found.
-    Checks Student, Admin, Superuser tables in that order.
-    """
+    
     student = db.query(Student).filter(Student.email == email).first()
     if student:
         return student, "student"
@@ -134,10 +118,7 @@ def get_user_by_id_and_role(db: Session, user_id: str, role: str):
         return db.query(Superuser).filter(Superuser.id == user_id).first()
     return None
 
-
-# ─────────────────────────────────────────────────────
 # CURRENT USER DEPENDENCY — used by every protected route
-# ─────────────────────────────────────────────────────
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     payload = decode_token(token)
@@ -171,9 +152,7 @@ def require_role(*allowed_roles):
     return checker
 
 
-# ─────────────────────────────────────────────────────
-# GOOGLE OAUTH — verify the ID token sent by the frontend
-# ─────────────────────────────────────────────────────
+#Google oauth login verification
 
 def verify_google_token(google_id_token: str) -> dict:
     """
@@ -182,9 +161,7 @@ def verify_google_token(google_id_token: str) -> dict:
     actually meant for OUR app (checked via GOOGLE_CLIENT_ID).
 
     Returns Google's decoded payload, which includes:
-      - email
-      - name
-      - email_verified
+    email, name, email_verified etc
     """
     if not GOOGLE_CLIENT_ID:
         raise HTTPException(500, "Google login is not configured on the server")
@@ -204,15 +181,12 @@ def verify_google_token(google_id_token: str) -> dict:
     return payload
 
 
-# ─────────────────────────────────────────────────────
-# EMAIL SENDING — for password reset links
-# ─────────────────────────────────────────────────────
-
+#email sending logic for password reset
 def send_password_reset_email(to_email: str, reset_token: str):
     """
     Sends a plain-text email with a reset link.
-    FRONTEND_RESET_URL should point at your frontend's reset password page,
-    which reads the token from the URL and calls /auth/reset-password.
+    FRONTEND_RESET_URL ko change karlena baad mei,
+    which reads  token from  the URL and calls /auth/reset-password.
     """
     if not SMTP_HOST or not SMTP_USERNAME:
         # SMTP not configured yet — don't crash the request, just log it.
@@ -241,7 +215,7 @@ def send_password_reset_email(to_email: str, reset_token: str):
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
             server.send_message(msg)
     except Exception as e:
-        # Don't leak SMTP internals to the client — log server-side instead
+        
         print(f"Failed to send reset email to {to_email}: {e}")
         raise HTTPException(500, "Failed to send reset email. Please try again later.")
 
