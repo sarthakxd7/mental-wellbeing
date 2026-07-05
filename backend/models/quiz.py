@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, Text, Integer, DateTime, ForeignKey, func, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -8,7 +8,7 @@ from database import Base
 class OptionSet(Base):
     __tablename__ = "option_sets"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
     label = Column(String, nullable=False, unique=True)
     # e.g. "agree_disagree", "apply_scale", "scqs_q1" etc.
     description = Column(Text, nullable=True)
@@ -21,8 +21,8 @@ class OptionSet(Base):
 class QuizOption(Base):
     __tablename__ = "quiz_options"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    option_set_id = Column(UUID(as_uuid=True), ForeignKey("option_sets.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    option_set_id = Column(String, ForeignKey("option_sets.id"), nullable=False)
     option_text = Column(String, nullable=False)
     score_value = Column(Integer, nullable=False)    # raw score 1-5, no polarity here
     display_order = Column(Integer, nullable=False)  # controls order shown on screen
@@ -35,8 +35,8 @@ class QuizOption(Base):
 class QuizTemplate(Base):
     __tablename__ = "quiz_templates"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    event_id = Column(UUID(as_uuid=True), ForeignKey("events.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    event_id = Column(String, ForeignKey("events.id"), nullable=False)
     quiz_type = Column(String, nullable=False)
     # quiz_type = 'SCQ' | 'GWBS' | 'TABBPS' | 'EI'
     # maps directly to scoring function in quiz_scoring.py
@@ -52,9 +52,9 @@ class QuizTemplate(Base):
 class QuizQuestion(Base):
     __tablename__ = "quiz_questions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    quiz_template_id = Column(UUID(as_uuid=True), ForeignKey("quiz_templates.id"), nullable=False)
-    option_set_id = Column(UUID(as_uuid=True), ForeignKey("option_sets.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    quiz_template_id = Column(String, ForeignKey("quiz_templates.id"), nullable=False)
+    option_set_id = Column(String, ForeignKey("option_sets.id"), nullable=False)
     question_no = Column(Integer, nullable=False)
     question_text = Column(Text, nullable=False)
     area_code = Column(String, nullable=True)
@@ -74,9 +74,9 @@ class QuizQuestion(Base):
 class QuizAttempt(Base):
     __tablename__ = "quiz_attempts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    quiz_template_id = Column(UUID(as_uuid=True), ForeignKey("quiz_templates.id"), nullable=False)
-    student_id = Column(UUID(as_uuid=True), ForeignKey("students.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    quiz_template_id = Column(String, ForeignKey("quiz_templates.id"), nullable=False)
+    student_id = Column(String, ForeignKey("students.id"), nullable=False)
     status = Column(String, nullable=False, default="not_attempted")
     # status = 'not_attempted' | 'in_progress' | 'submitted'
     # created with 'not_attempted' when student RSVPs to event
@@ -85,7 +85,7 @@ class QuizAttempt(Base):
     # null for EI (no overall score) and TABBPS (no single total)
     overall_remark = Column(String, nullable=True)
     # null for EI (per competency only) and TABBPS (classification instead)
-    result_json = Column(JSONB, nullable=True)
+    result_json = Column(JSON, nullable=True)
     # stores full scoring output:
     # SCQ   → dimension scores
     # GWBS  → dimension scores
@@ -107,8 +107,8 @@ class QuizAttempt(Base):
 class AreaScore(Base):
     __tablename__ = "area_scores"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    attempt_id = Column(UUID(as_uuid=True), ForeignKey("quiz_attempts.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    attempt_id = Column(String, ForeignKey("quiz_attempts.id"), nullable=False)
     area_code = Column(String, nullable=False)
     # matches area_code on quiz_questions
     # enables direct SQL: "all students with EI SA score above 35"
@@ -122,10 +122,10 @@ class AreaScore(Base):
 class QuizResponse(Base):
     __tablename__ = "quiz_responses"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    attempt_id = Column(UUID(as_uuid=True), ForeignKey("quiz_attempts.id"), nullable=False)
-    question_id = Column(UUID(as_uuid=True), ForeignKey("quiz_questions.id"), nullable=False)
-    selected_option_id = Column(UUID(as_uuid=True), ForeignKey("quiz_options.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
+    attempt_id = Column(String, ForeignKey("quiz_attempts.id"), nullable=False)
+    question_id = Column(String, ForeignKey("quiz_questions.id"), nullable=False)
+    selected_option_id = Column(String, ForeignKey("quiz_options.id"), nullable=False)
     score_awarded = Column(Integer, nullable=False)
     # raw score_value from selected option
     # service layer builds answers dict from these rows before calling scorer
