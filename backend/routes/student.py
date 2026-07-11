@@ -6,7 +6,7 @@ from models.student import Student
 from models.quiz import QuizAttempt, QuizTemplate
 from schemas.event import EventOut, EventRSVPCreate
 from schemas.student import DashboardOut
-from services.auth import get_current_user
+from services.auth import require_role
 from schemas.quiz import QuizAttemptOut
 
 router = APIRouter(prefix="/student", tags=["student"])
@@ -16,12 +16,11 @@ router = APIRouter(prefix="/student", tags=["student"])
 def get_events(
     status: str = None,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
-    valid_statuses = ["upcoming", "completed", "postponed"]
+    valid_statuses = ['scheduled', 'ongoing', 'completed', 'closed', 'cancelled']
 
     if status and status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Invalid status. Choose from upcoming, completed, postponed")
@@ -38,10 +37,9 @@ def get_events(
 def rsvp_event(
     data: EventRSVPCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     # CHECK 1: already RSVPed?
     existing_rsvp = db.query(EventRSVP).filter(
@@ -75,10 +73,9 @@ def rsvp_event(
 @router.get("/rsvps", response_model=list[EventOut])
 def get_rsvps(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     events = db.query(Event).join(EventRSVP).filter(
         EventRSVP.student_id == current_user.id
@@ -90,10 +87,9 @@ def get_rsvps(
 @router.get("/dashboard", response_model=DashboardOut)
 def show_dashboard(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     info = db.query(Student).filter(Student.id == current_user.id).first()
 
@@ -120,10 +116,9 @@ def show_dashboard(
 @router.get("/results", response_model=list[QuizAttemptOut])
 def get_results(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     results = db.query(QuizAttempt).filter(
         QuizAttempt.student_id == current_user.id,
@@ -136,47 +131,67 @@ def get_results(
 def get_quizzes_for_event(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
-    # Check if the student has RSVPed for the event
     rsvp = db.query(EventRSVP).filter(
         EventRSVP.event_id == event_id,
         EventRSVP.student_id == current_user.id
     ).first()
-
     if not rsvp:
         raise HTTPException(status_code=403, detail="You have not RSVPed for this event")
 
-    # Fetch quizzes associated with the event
-    quizzes = db.query(QuizAttempt, QuizTemplate).join(
-    QuizTemplate, QuizAttempt.quiz_template_id == QuizTemplate.id).filter(
-    QuizTemplate.event_id == event_id,
-    QuizAttempt.student_id == current_user.id,  
-    QuizAttempt.status == "submitted").all()
-    
-    
-    result = []
-    for attempt, quiz in quizzes:
-        if quiz.quiz_type in ["SCQ", "GWBS"]:
-           score_display = f"Score {attempt.total_score}"
-           interpretation = attempt.result_json.get("interpretation")
-        elif quiz.quiz_type == "TABBPS":
-           score_display = attempt.result_json.get("final_classification")
-           interpretation = None
-        elif quiz.quiz_type == "EI":
-           interps = attempt.result_json.get("competency_interpretations", {})
-           strengths = sum(1 for v in interps.values() if v == "Strength")
-           score_display = f"{strengths} Strengths"
-           interpretation = None
+    # Start from QuizTemplate so quizzes with no attempt yet are included
+    quiz_templates = db.query(QuizTemplate).filter(
+        QuizTemplate.event_id == event_id
+    ).all()
 
-        result.append({
-            "quiz_type": quiz.quiz_type,
-            "title": quiz.title,
-            "score_display": score_display,
-            "interpretation": interpretation })
+    # Fetch this student's attempts for these quizzes in one go
+    template_ids = [q.id for q in quiz_templates]
+    attempts = db.query(QuizAttempt).filter(
+        QuizAttempt.quiz_template_id.in_(template_ids),
+        QuizAttempt.student_id == current_user.id
+    ).all()
+    attempts_by_template = {a.quiz_template_id: a for a in attempts}
+
+    result = []
+    for quiz in quiz_templates:
+        attempt = attempts_by_template.get(quiz.id)
+
+        if attempt and attempt.status == "submitted":
+            # Already completed — show results, locked from retake
+            if quiz.quiz_type in ["SCQ", "GWBS"]:
+                score_display = f"Score {attempt.total_score}"
+                interpretation = attempt.result_json.get("interpretation")
+            elif quiz.quiz_type == "TABBPS":
+                score_display = attempt.result_json.get("final_classification")
+                interpretation = None
+            elif quiz.quiz_type == "EI":
+                interps = attempt.result_json.get("competency_interpretations", {})
+                strengths = sum(1 for v in interps.values() if v == "Strength")
+                score_display = f"{strengths} Strengths"
+                interpretation = None
+            else:
+                score_display = None
+                interpretation = None
+
+            result.append({
+                "quiz_type": quiz.quiz_type,
+                "title": quiz.title,
+                "status": "submitted",
+                "score_display": score_display,
+                "interpretation": interpretation
+            })
+        else:
+            # Not submitted yet — available to take (no timer logic yet)
+            result.append({
+                "quiz_type": quiz.quiz_type,
+                "title": quiz.title,
+                "status": "available",
+                "score_display": None,
+                "interpretation": None
+            })
 
     return result
 
@@ -184,10 +199,9 @@ def get_quizzes_for_event(
 def get_event_overall_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     # check RSVP
     rsvp = db.query(EventRSVP).filter(

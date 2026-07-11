@@ -4,7 +4,7 @@ from database import get_db
 from models.event import Event, EventReport, EventRSVP
 from models.student import Student
 from models.quiz import QuizTemplate, QuizAttempt
-from services.auth import get_current_user 
+from services.auth import require_role 
 from schemas.event import EventReportOut
 from models.admin import Admin  
 
@@ -15,10 +15,9 @@ router = APIRouter(prefix="/superuser", tags=["superuser"])
 def get_all_events(
     status: str = None,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("superuser"))
 ):
-    if current_user.role != "superuser":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     valid_statuses = ["upcoming", "completed", "postponed", "cancelled"]
 
@@ -54,10 +53,9 @@ def get_all_events(
 def get_event_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("superuser"))
 ):
-    if current_user.role != "superuser":
-       raise HTTPException(status_code=403, detail="Not authorized")
+    
     
     event = db.query(Event).filter(Event.id == event_id).first()
 
@@ -89,10 +87,9 @@ def get_event_results(
 def get_event_report(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("superuser"))
 ):
-    if current_user.role != "superuser":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     event = db.query(Event).filter(Event.id == event_id).first()
 
@@ -112,10 +109,9 @@ def get_event_report(
 @router.get("/students")
 def get_all_students(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("superuser"))
 ):
-    if current_user.role != "superuser":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     students = db.query(Student).all()
 
@@ -146,10 +142,9 @@ def get_all_students(
 @router.get("/dashboard")
 def get_superuser_dashboard(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("superuser"))
 ):
-    if current_user.role != "superuser":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     # TODO: finalize after team discussion
     # basic summary for now

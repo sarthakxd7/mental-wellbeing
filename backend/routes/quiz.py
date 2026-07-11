@@ -6,7 +6,7 @@ from models.quiz import QuizTemplate, QuizQuestion, QuizAttempt, QuizResponse, Q
 from models.student import Student
 from services.quiz_scoring import compute_quiz_result
 from datetime import datetime
-from services.auth import get_current_user 
+from services.auth import require_role 
 from schemas.quiz import QuizOut, QuizSubmit
 
 
@@ -17,10 +17,9 @@ router = APIRouter(prefix="/quiz", tags=["quiz"])
 def get_quiz(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     student_id = current_user.id
 
@@ -77,7 +76,7 @@ def get_quiz(
                         "id": str(opt.id),
                         "option_set_id": str(opt.option_set_id), 
                         "option_text": opt.option_text,
-                        "score_value": opt.score_value,
+                
                         "display_order": opt.display_order
                     }
                     for opt in options
@@ -99,10 +98,9 @@ def get_quiz(
 def submit_quiz(
     data: QuizSubmit,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     student_id = current_user.id
 
@@ -173,7 +171,7 @@ def submit_quiz(
         )
         db.add(attempt)
 
-    db.commit()
+    db.flush() #flush to get attempt.id before committing
     db.refresh(attempt)
 
     # save individual responses
@@ -206,10 +204,9 @@ def submit_quiz(
 def get_quiz_result(
     attempt_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("student"))
 ):
-    if current_user.role != "student":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
 
     student_id = current_user.id
 

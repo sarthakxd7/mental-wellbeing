@@ -5,23 +5,22 @@ from database import get_db
 from models.event import Event, EventReport
 from models.quiz import QuizTemplate, QuizAttempt
 from models.student import Student
-from services.auth import get_current_user  
+from services.auth import require_role 
 from schemas.event import EventOut, EventCreate, EventUpdate, EventCancelSchema
 # from models.admin import Admin  # needed for admin dashboard route
 from schemas.quiz import QuizTemplateOut,QuizTemplateCreate
-
+import os
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 @router.get("/events", response_model=list[EventOut])
 def get_admin_events(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
     
 
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     events = db.query(Event).filter(Event.admin_id == admin_id).all()
@@ -30,10 +29,9 @@ def get_admin_events(
 @router.get("/dashboard")
 def get_admin_dashboard(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     # TODO: pending wireframe confirmation
     return {"message": "Admin dashboard coming soon"}
 
@@ -43,10 +41,9 @@ def get_admin_dashboard(
 def create_event(
     data: EventCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     new_event = Event(
@@ -85,10 +82,9 @@ def update_event(
     event_id: str,
     data: EventUpdate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id= current_user.id
 
     event = db.query(Event).filter(
@@ -122,10 +118,9 @@ def cancel_event(
     event_id: str,
     data: EventCancelSchema,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -155,10 +150,9 @@ async def upload_report(
     report_content: str = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     # CHECK 1: event exists and belongs to this admin
@@ -175,7 +169,8 @@ async def upload_report(
         raise HTTPException(status_code=400, detail="Cannot upload report for cancelled event")
 
     # save file to local storage
-    file_location = f"reports/{event_id}_{file.filename}"
+    safe_filename = os.path.basename(file.filename).replace(" ", "_")
+    file_location = f"reports/{event_id}_{safe_filename}"
     with open(file_location, "wb") as f:
         f.write(await file.read())
 
@@ -196,10 +191,9 @@ async def upload_report(
 def get_event_quizzes(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     # CHECK: event belongs to this admin
@@ -224,10 +218,9 @@ def add_quiz_to_event(
     event_id: str,
     data: QuizTemplateCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     # CHECK: event belongs to this admin
@@ -266,10 +259,9 @@ def add_quiz_to_event(
 def get_scq_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -310,10 +302,9 @@ def get_scq_results(
 def get_gwbs_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -354,10 +345,9 @@ def get_gwbs_results(
 def get_tabbps_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -402,10 +392,9 @@ def get_tabbps_results(
 def get_ei_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -462,10 +451,9 @@ def get_ei_results(
 def get_overall_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     event = db.query(Event).filter(
@@ -536,10 +524,9 @@ def get_overall_results(
 def get_event_results(
     event_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(require_role("admin"))
 ):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    
     admin_id = current_user.id
 
     # CHECK: event belongs to this admin
