@@ -62,11 +62,10 @@ const ManageQuizzes = () => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
-              activeTab === tab
+            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === tab
                 ? "bg-[#F3F2F2] border border-[#73D38F] text-[#386641]"
                 : "text-[#9DB1A3] hover:text-[#386641]"
-            }`}
+              }`}
           >
             {tab}
           </button>
