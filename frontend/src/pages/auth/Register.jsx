@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import logo from "../../assets/icons/image.png";
+import logo from "../../assets/icons/logo.png";
 import API from "../../api/axios";
 
 const Register = () => {

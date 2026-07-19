@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import logo from '../../assets/icons/logo.png';
 import sparklesImage from '../../assets/sparkles.png';
+import calmiImage from '../../assets/Calmi.png';
 import scqIcon from '../../assets/SCQ.png';
 import gwbsIcon from '../../assets/GWBS.png';
 import tabbpsIcon from '../../assets/TABBPS.png';
@@ -212,88 +213,110 @@ const Landing = () => {
               </a>
             </div>
 
-            {/* Badges Row */}
-            <div style={{ display: 'flex', gap: '2rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
+                        {/* Mascot & Badges Section */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
+              
+              {/* Mascot Character */}
+              <img 
+                src={calmiImage} 
+                alt="Calmi Mascot" 
+                style={{ width: '150px', height: '150px', objectFit: 'contain' }} 
+              />
 
-              {/* Badge 1 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{
-                  width: '31px',
-                  height: '35px',
-                  backgroundColor: '#C7EBD2',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#3E4F45'
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              {/* Badges Row */}
+              <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                
+                {/* Badge 1: Validated */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '36px', 
+                    height: '36px', 
+                    backgroundColor: '#E8F5EC', // Light green
+                    borderRadius: '50%', // Circle
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#107B3E' // Forest green icon
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                  </div>
+                  <span style={{ 
+                    fontFamily: "'Raleway', sans-serif", 
+                    fontWeight: 700, 
+                    fontSize: '11px', 
+                    lineHeight: '14px', 
+                    color: '#738077',
+                    width: '80px',
+                    display: 'block'
+                  }}>
+                    Scientifically Validated
+                  </span>
                 </div>
-                <span style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  fontWeight: 700,
-                  fontSize: '10px',
-                  lineHeight: '12px',
-                  color: '#3E4F45',
-                  width: '64px',
-                  display: 'block'
-                }}>
-                  Scientifically Validated
-                </span>
-              </div>
 
-              {/* Badge 2 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{
-                  width: '31px',
-                  height: '35px',
-                  backgroundColor: '#C7EBD2',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#3E4F45'
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                {/* Badge 2: Secure */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '36px', 
+                    height: '36px', 
+                    backgroundColor: '#E8F5EC', 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#107B3E'
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <span style={{ 
+                    fontFamily: "'Raleway', sans-serif", 
+                    fontWeight: 700, 
+                    fontSize: '11px', 
+                    lineHeight: '14px', 
+                    color: '#738077',
+                    width: '80px',
+                    display: 'block'
+                  }}>
+                    Secure & Confidential
+                  </span>
                 </div>
-                <span style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  fontWeight: 700,
-                  fontSize: '10px',
-                  lineHeight: '12px',
-                  color: '#3E4F45',
-                  width: '59px',
-                  display: 'block'
-                }}>
-                  Secure & Confidential
-                </span>
-              </div>
 
-              {/* Badge 3 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{
-                  width: '31px',
-                  height: '35px',
-                  backgroundColor: '#C7EBD2',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#3E4F45'
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                {/* Badge 3: Trusted */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ 
+                    width: '36px', 
+                    height: '36px', 
+                    backgroundColor: '#E8F5EC', 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#107B3E'
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <span style={{ 
+                    fontFamily: "'Raleway', sans-serif", 
+                    fontWeight: 700, 
+                    fontSize: '11px', 
+                    lineHeight: '14px', 
+                    color: '#738077',
+                    width: '80px',
+                    display: 'block'
+                  }}>
+                    Community Focused
+                  </span>
                 </div>
-                <span style={{
-                  fontFamily: "'Raleway', sans-serif",
-                  fontWeight: 700,
-                  fontSize: '10px',
-                  lineHeight: '12px',
-                  color: '#3E4F45',
-                  width: '66px',
-                  display: 'block'
-                }}>
-                  Trusted by Psychologists
-                </span>
+
               </div>
 
             </div>
