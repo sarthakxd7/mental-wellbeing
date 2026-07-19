@@ -1,344 +1,215 @@
-// import { useState } from "react";
-// import { Search, Plus, Pencil, Trash2, X } from "lucide-react";
-
-// function ManageQuizzes() {
-//   const [search, setSearch] = useState("");
-
-//   const [showModal, setShowModal] = useState(false);
-
-//   const [quizType, setQuizType] = useState("");
-//   const [quizDate, setQuizDate] = useState("");
-//   const [quizTime, setQuizTime] = useState("");
-
-//   const [editingId, setEditingId] = useState(null);
-
-//   const [quizzes, setQuizzes] = useState([
-//     {
-//       id: 1,
-//       type: "Self Concept",
-//       date: "2026-07-12",
-//       time: "10:00",
-//       status: "Scheduled",
-//     },
-//     {
-//       id: 2,
-//       type: "General Well Being",
-//       date: "2026-07-15",
-//       time: "14:30",
-//       status: "Scheduled",
-//     },
-//   ]);
-
-//   const filtered = quizzes.filter((quiz) =>
-//     quiz.type.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   function resetForm() {
-//     setQuizType("");
-//     setQuizDate("");
-//     setQuizTime("");
-//     setEditingId(null);
-//   }
-
-//   function openCreateModal() {
-//     resetForm();
-//     setShowModal(true);
-//   }
-
-//   function saveQuiz() {
-//     if (!quizType || !quizDate || !quizTime) {
-//       alert("Please fill all fields.");
-//       return;
-//     }
-
-//     if (editingId) {
-//       setQuizzes(
-//         quizzes.map((quiz) =>
-//           quiz.id === editingId
-//             ? {
-//                 ...quiz,
-//                 type: quizType,
-//                 date: quizDate,
-//                 time: quizTime,
-//               }
-//             : quiz
-//         )
-//       );
-//     } else {
-//       const newQuiz = {
-//         id: Date.now(),
-//         type: quizType,
-//         date: quizDate,
-//         time: quizTime,
-//         status: "Scheduled",
-//       };
-
-//       setQuizzes([...quizzes, newQuiz]);
-//     }
-
-//     resetForm();
-//     setShowModal(false);
-//   }
-
-//   function editQuiz(quiz) {
-//     setEditingId(quiz.id);
-//     setQuizType(quiz.type);
-//     setQuizDate(quiz.date);
-//     setQuizTime(quiz.time);
-//     setShowModal(true);
-//   }
-
-//   function deleteQuiz(id) {
-//     if (window.confirm("Delete this quiz?")) {
-//       setQuizzes(quizzes.filter((quiz) => quiz.id !== id));
-//     }
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-slate-100 px-4 py-8">
-
-//       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-
-//         <div>
-//           <h1 className="text-3xl font-bold text-slate-800">
-//             Manage Quizzes
-//           </h1>
-
-//           <p className="text-gray-500">
-//             Schedule quizzes for students
-//           </p>
-//         </div>
-
-//         <button
-//           onClick={openCreateModal}
-//           className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
-//         >
-//           <Plus size={18} />
-//           Create Quiz
-//         </button>
-
-//       </div>
-
-//       <div className="bg-white rounded-xl shadow mt-8 p-5">
-
-//         <div className="relative">
-
-//           <Search
-//             className="absolute left-3 top-3.5 text-gray-400"
-//             size={18}
-//           />
-
-//           <input
-//             type="text"
-//             placeholder="Search Quiz Type..."
-//             value={search}
-//             onChange={(e) => setSearch(e.target.value)}
-//             className="w-full border rounded-lg py-3 pl-10"
-//           />
-
-//         </div>
-
-//       </div>
-
-//       <div className="bg-white rounded-xl shadow mt-8 overflow-x-auto">
-
-//         <table className="w-full min-w-[700px]">
-
-//           <thead className="bg-gray-100">
-
-//             <tr>
-
-//               <th className="text-left p-4">Quiz Type</th>
-
-//               <th className="text-left p-4">Date</th>
-
-//               <th className="text-left p-4">Time</th>
-
-//               <th className="text-left p-4">Status</th>
-
-//               <th className="text-center p-4">
-//                 Actions
-//               </th>
-
-//             </tr>
-
-//           </thead>
-
-//           <tbody>
-
-//             {filtered.map((quiz) => (
-
-//               <tr
-//                 key={quiz.id}
-//                 className="border-t hover:bg-gray-50"
-//               >
-
-//                 <td className="p-4 font-medium">
-//                   {quiz.type}
-//                 </td>
-
-//                 <td className="p-4">
-//                   {quiz.date}
-//                 </td>
-
-//                 <td className="p-4">
-//                   {quiz.time}
-//                 </td>
-
-//                 <td className="p-4">
-//                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-//                     {quiz.status}
-//                   </span>
-//                 </td>
-
-//                 <td className="p-4">
-
-//                   <div className="flex justify-center gap-4">
-
-//                     <button
-//                       onClick={() => editQuiz(quiz)}
-//                       className="text-blue-600"
-//                     >
-//                       <Pencil size={18} />
-//                     </button>
-
-//                     <button
-//                       onClick={() => deleteQuiz(quiz.id)}
-//                       className="text-red-600"
-//                     >
-//                       <Trash2 size={18} />
-//                     </button>
-
-//                   </div>
-
-//                 </td>
-
-//               </tr>
-
-//             ))}
-
-//           </tbody>
-
-//         </table>
-
-//       </div>
-//             {showModal && (
-//         <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4">
-
-//           <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
-
-//             <div className="flex justify-between items-center mb-6">
-
-//               <h2 className="text-2xl font-bold">
-//                 {editingId ? "Edit Quiz" : "Create Quiz"}
-//               </h2>
-
-//               <button
-//                 onClick={() => {
-//                   resetForm();
-//                   setShowModal(false);
-//                 }}
-//               >
-//                 <X size={22} />
-//               </button>
-
-//             </div>
-
-//             <div className="space-y-5">
-
-//               <div>
-
-//                 <label className="block mb-2 font-medium">
-//                   Quiz Type
-//                 </label>
-
-//                 <select
-//                   value={quizType}
-//                   onChange={(e) => setQuizType(e.target.value)}
-//                   className="w-full border rounded-lg p-3"
-//                 >
-//                   <option value="">Select Quiz Type</option>
-
-//                   <option value="Self Concept">
-//                     Self Concept
-//                   </option>
-
-//                   <option value="General Well Being">
-//                     General Well Being
-//                   </option>
-
-//                   <option value="Type A-B Behavioural">
-//                     Type A-B Behavioural
-//                   </option>
-
-//                   <option value="Emotional Intelligence">
-//                     Emotional Intelligence
-//                   </option>
-
-//                 </select>
-
-//               </div>
-
-//               <div>
-
-//                 <label className="block mb-2 font-medium">
-//                   Quiz Date
-//                 </label>
-
-//                 <input
-//                   type="date"
-//                   value={quizDate}
-//                   onChange={(e) => setQuizDate(e.target.value)}
-//                   className="w-full border rounded-lg p-3"
-//                 />
-
-//               </div>
-
-//               <div>
-
-//                 <label className="block mb-2 font-medium">
-//                   Quiz Time
-//                 </label>
-
-//                 <input
-//                   type="time"
-//                   value={quizTime}
-//                   onChange={(e) => setQuizTime(e.target.value)}
-//                   className="w-full border rounded-lg p-3"
-//                 />
-
-//               </div>
-
-//               <div className="flex justify-end gap-3 pt-4">
-
-//                 <button
-//                   onClick={() => {
-//                     resetForm();
-//                     setShowModal(false);
-//                   }}
-//                   className="border px-5 py-3 rounded-lg"
-//                 >
-//                   Cancel
-//                 </button>
-
-//                 <button
-//                   onClick={saveQuiz}
-//                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg"
-//                 >
-//                   {editingId ? "Update Quiz" : "Create Quiz"}
-//                 </button>
-
-//               </div>
-
-//             </div>
-
-//           </div>
-
-//         </div>
-//       )}
-
-//     </div>
-//   );
-// }
-
-// export default ManageQuizzes;
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
+
+const ManageQuizzes = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("Upcoming Quizzes");
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+
+  const tabs = ["Upcoming Quizzes", "Past Quizzes", "Quiz Types"];
+
+  const quizzes = [
+    { id: 1, type: "SCQ", event: "Stress Management Workshop", date: "1 June", description: "Self Concept Questionnaire. Assesses various dimensions of self-concept including physical, social, temperamental, educational, moral, and intellectual self." },
+    { id: 2, type: "GWBS", event: "Stress Management Workshop", date: "1 June", description: "General Well-Being Scale. Measures subjective feelings of psychological well-being and distress." },
+    { id: 3, type: "TABBPS", event: "Stress Management Workshop", date: "1 June", description: "Type A/B Behaviour Pattern Scale. Helps identify personality traits and susceptibility to stress." },
+    { id: 4, type: "EI", event: "Stress Management Workshop", date: "1 June", description: "Emotional Intelligence Scale. Evaluates self-awareness, managing emotions, motivating oneself, empathy, and social skill." },
+    { id: 5, type: "GWBS", event: "Stress Management Workshop", date: "30 May", description: "General Well-Being Scale. Measures subjective feelings of psychological well-being and distress." },
+  ];
+
+  const quizTypes = [
+    {
+      id: 1,
+      title: "Self Concept (SCQ)",
+      subtitle: "48 Questions · 6 Dimensions",
+      frequency: "3 Events",
+      dateLastTaken: "12 Jul 2026 • 2:00 PM",
+    },
+    {
+      id: 2,
+      title: "General Well-Being (GWBS)",
+      subtitle: "55 Questions · 4 Dimensions",
+      frequency: "2 Events",
+      dateLastTaken: "12 Jul 2026 • 2:00 PM",
+    },
+    {
+      id: 3,
+      title: "Type A/B Pattern (TABBPS)",
+      subtitle: "33 Questions · Form A+B",
+      frequency: "1 Event",
+      dateLastTaken: "12 Jul 2026 • 2:00 PM",
+    },
+    {
+      id: 4,
+      title: "Emotional Intelligence (EI)",
+      subtitle: "50 Questions · 5 Competencies",
+      frequency: "3 Events",
+      dateLastTaken: "12 Jul 2026 • 2:00 PM",
+    },
+  ];
+
+  return (
+    <div className="w-full h-full flex flex-col font-sans relative">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-[#386641] font-serif leading-none mb-2">
+          Manage Quizzes
+        </h1>
+        <p className="text-sm text-[#9DB1A3] font-medium">
+          Descriptions of all the quizzes
+        </p>
+      </div>
+
+      <div className="flex gap-4 mb-8">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors cursor-pointer ${activeTab === tab
+                ? "bg-[#F3F2F2] border border-[#73D38F] text-[#386641]"
+                : "text-[#9DB1A3] hover:text-[#386641]"
+              }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-[#F3F2F2] rounded-3xl p-8 flex-1 overflow-auto">
+        {(activeTab === "Upcoming Quizzes" || activeTab === "Past Quizzes") && (
+          <div className="flex flex-col h-full">
+            <div className="grid grid-cols-4 gap-4 px-6 pb-4 border-b border-black/10 font-serif font-semibold text-black">
+              <div>Quiz Type</div>
+              <div className="text-center">Event</div>
+              <div className="text-center">Date</div>
+              <div className="text-right pr-6"></div>
+            </div>
+
+            <div className="flex flex-col gap-4 mt-6 overflow-y-auto pr-2 pb-10">
+              {quizzes.map((quiz) => (
+                <div
+                  key={quiz.id}
+                  className="grid grid-cols-4 gap-4 items-center bg-[#E5E5E5] border border-[#2F3C36] rounded-xl px-6 py-4"
+                >
+                  <div className="text-[#3A8458] font-sans font-medium text-lg">
+                    {quiz.type}
+                  </div>
+                  <div className="text-center text-[#3E4F45] text-sm">
+                    {quiz.event}
+                  </div>
+                  <div className="text-center text-[#3E4F45] text-sm">
+                    {quiz.date}
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => {
+                        if (activeTab === "Upcoming Quizzes") {
+                          setSelectedQuiz(quiz);
+                        } else {
+                          navigate(`/admin/quizzes/${quiz.id}/results`);
+                        }
+                      }}
+                      className="bg-[#2E7D4F] hover:bg-[#256641] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      {activeTab === "Upcoming Quizzes" ? "View Details" : "View Results"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "Quiz Types" && (
+          <div className="flex flex-col h-full">
+            <div className="grid grid-cols-3 gap-4 px-6 pb-4 border-b border-black/10 font-serif font-semibold text-black">
+              <div>Quiz Type</div>
+              <div className="text-center">Frequency</div>
+              <div className="text-right">Date Last Taken</div>
+            </div>
+
+            <div className="flex flex-col gap-4 mt-6 overflow-y-auto pr-2 pb-10">
+              {quizTypes.map((qt) => (
+                <div
+                  key={qt.id}
+                  className="grid grid-cols-3 gap-4 items-center bg-[#E5E5E5] border border-[#2F3C36] rounded-xl px-6 py-4"
+                >
+                  <div>
+                    <div className="text-[#3A8458] font-sans font-medium text-lg">
+                      {qt.title}
+                    </div>
+                    <div className="text-[#3E4F45] text-xs mt-1">
+                      {qt.subtitle}
+                    </div>
+                  </div>
+                  <div className="text-center text-[#3E4F45] text-sm">
+                    {qt.frequency}
+                  </div>
+                  <div className="text-right text-[#3E4F45] text-sm pr-4">
+                    {qt.dateLastTaken}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {selectedQuiz && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 animate-fade-in backdrop-blur-sm">
+          <div className="bg-[#F3F2F2] rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-[#2F3C36]">
+            <button
+              onClick={() => setSelectedQuiz(null)}
+              className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-[#386641] font-serif leading-none mb-2">
+                Quiz Details
+              </h3>
+              <p className="text-sm text-[#9DB1A3] font-medium">
+                Information about the scheduled quiz
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-xs font-bold text-[#9DB1A3] tracking-wider uppercase mb-1">Quiz Type</h4>
+                <div className="text-[#3A8458] font-bold text-lg">{selectedQuiz.type}</div>
+              </div>
+              
+              <div>
+                <h4 className="text-xs font-bold text-[#9DB1A3] tracking-wider uppercase mb-1">Event</h4>
+                <div className="text-[#3E4F45] font-medium">{selectedQuiz.event}</div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-[#9DB1A3] tracking-wider uppercase mb-1">Scheduled Date</h4>
+                <div className="text-[#3E4F45] font-medium">{selectedQuiz.date}</div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-[#9DB1A3] tracking-wider uppercase mb-1">Description</h4>
+                <div className="text-[#3E4F45] text-sm leading-relaxed">
+                  {selectedQuiz.description}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={() => setSelectedQuiz(null)}
+                className="bg-[#2E7D4F] hover:bg-[#256641] text-white px-6 py-2.5 rounded-lg font-medium transition-colors cursor-pointer text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ManageQuizzes;
