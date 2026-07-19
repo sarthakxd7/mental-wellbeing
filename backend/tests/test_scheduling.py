@@ -7,6 +7,7 @@ Uses an in-memory SQLite database so it never touches your real wellbeing.db.
 
 import uuid
 from datetime import date, time, timedelta, datetime
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -69,8 +70,8 @@ def test_past_event_transitions_to_ongoing(test_db):
     event = make_event(test_db, admin.id, yesterday, time(14, 0), status="scheduled")
 
     update_event_statuses()
-
     test_db.refresh(event)
+
     assert event.status == "ongoing"
 
 
@@ -81,8 +82,8 @@ def test_future_event_stays_scheduled(test_db):
     event = make_event(test_db, admin.id, tomorrow, time(14, 0), status="scheduled")
 
     update_event_statuses()
-
     test_db.refresh(event)
+
     assert event.status == "scheduled"
 
 
@@ -94,8 +95,8 @@ def test_ongoing_event_is_not_touched(test_db):
     event = make_event(test_db, admin.id, yesterday, time(14, 0), status="ongoing")
 
     update_event_statuses()
-
     test_db.refresh(event)
+
     assert event.status == "ongoing"  # unchanged
 
 
@@ -106,18 +107,20 @@ def test_completed_event_is_not_touched(test_db):
     event = make_event(test_db, admin.id, yesterday, time(14, 0), status="completed")
 
     update_event_statuses()
-
     test_db.refresh(event)
+
     assert event.status == "completed"  # unchanged
 
 
-def test_event_starting_right_now_transitions(test_db):
-    """Edge case: event scheduled for exactly now should transition."""
+def test_event_starting_just_now_transitions(test_db):
+    """Edge case: event that started a moment ago should transition.
+    Uses 1 second in the past instead of exactly now to avoid
+    timing-sensitivity (commit latency could make 'now' flip sides)."""
     admin = make_admin(test_db)
-    now = datetime.now()
-    event = make_event(test_db, admin.id, now.date(), now.time(), status="scheduled")
+    just_past = datetime.now() - timedelta(seconds=1)
+    event = make_event(test_db, admin.id, just_past.date(), just_past.time(), status="scheduled")
 
     update_event_statuses()
-
     test_db.refresh(event)
+
     assert event.status == "ongoing"
