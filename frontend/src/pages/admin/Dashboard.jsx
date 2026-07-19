@@ -69,8 +69,8 @@ const Dashboard = () => {
     return (
       <div className="p-8">
         <div className="bg-red-50 text-red-700 p-6 rounded-2xl border border-red-100 max-w-md">
-          <h3 className="font-bold text-lg mb-2">Error Loading Dashboard</h3>
-          <p>{error || "An unexpected error occurred."}</p>
+          <h3 className="font-bold text-lg mb-2 font-serif">Error Loading Dashboard</h3>
+          <p className="font-sans">{error || "An unexpected error occurred."}</p>
         </div>
       </div>
     );
@@ -86,99 +86,111 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="w-full h-full flex flex-col font-sans">
       {/* Header section */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-extrabold text-[#386641] tracking-tight font-sans">
-            Welcome, Yasmin
-          </h2>
-          <p className="text-sm text-gray-500 mt-1 font-semibold">
+          <h1 className="text-3xl font-bold tracking-tight text-[#386641] font-serif leading-none mb-2">
+            Welcome, {data.admin_name.split(' ')[0] || "Yasmin"}
+          </h1>
+          <p className="text-sm text-[#9DB1A3] font-medium">
             {data.department}
           </p>
         </div>
         <button
           onClick={handleDownloadSummary}
-          className="flex items-center gap-2 text-sm font-semibold text-[#8AA38E] hover:text-[#386641] bg-[#FAF8F5] hover:bg-[#EFEFEF]/50 px-4 py-2.5 rounded-xl border border-gray-200 transition-all shadow-sm cursor-pointer"
+          className="flex items-center gap-2 bg-[#2E7D4F] hover:bg-[#256641] text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors cursor-pointer shadow-sm"
         >
           <Download className="w-4 h-4" />
           Download Summary
         </button>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={card.title}
-              className="bg-[#EFEFEF]/60 border border-gray-150 rounded-3xl p-6 flex flex-col justify-between h-[150px] shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex justify-between items-start">
-                <span className="text-base font-bold text-[#386641] tracking-wide font-sans">
-                  {card.title}
-                </span>
-                <Icon className="w-5 h-5 text-[#386641]/75 group-hover:scale-110 transition-transform" />
+      <div className="bg-[#F3F2F2] rounded-3xl p-8 flex-1 overflow-auto">
+        
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {statCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.title}
+                className="bg-[#E5E5E5] border border-[#2F3C36] rounded-xl p-6 flex flex-col justify-between h-[150px] relative overflow-hidden group hover:border-[#386641] transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <span className="text-sm font-semibold text-black tracking-wide font-serif">
+                    {card.title}
+                  </span>
+                  <div className="p-2 bg-white rounded-lg border border-[#2F3C36]/20">
+                    <Icon className="w-5 h-5 text-[#3A8458]" />
+                  </div>
+                </div>
+                <div className="text-4xl font-extrabold text-[#386641] tracking-tight mt-4 font-sans">
+                  {card.value}
+                </div>
               </div>
-              <div className="text-4xl font-extrabold text-[#386641] tracking-tight mt-4">
-                {card.value}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Events Summary Section */}
-      <div className="bg-[#FAF8F5] border border-gray-150 rounded-[32px] p-8 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-[#386641] font-sans">Events Summary</h3>
-          <Link
-            to="/admin/events"
-            className="flex items-center gap-1.5 text-sm font-bold text-gray-600 hover:text-[#386641] transition-all group"
-          >
-            View All
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+            );
+          })}
         </div>
 
-        {events_summary.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 bg-white rounded-2xl border border-dashed border-gray-200">
-            No events registered yet.
+        {/* Events Summary Section */}
+        <div className="flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-[#386641] font-serif">Events Summary</h2>
+            <Link
+              to="/admin/events"
+              className="flex items-center gap-1.5 text-sm font-semibold text-[#3A8458] hover:text-[#2E7D4F] transition-colors group"
+            >
+              View All
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="text-left text-sm font-bold text-gray-400 border-b border-gray-200">
-                  <th className="pb-4 font-sans uppercase tracking-wider">Event</th>
-                  <th className="pb-4 font-sans uppercase tracking-wider">Quizzes</th>
-                  <th className="pb-4 font-sans uppercase tracking-wider">Date</th>
-                  <th className="pb-4 font-sans uppercase tracking-wider">Attendees</th>
-                  <th className="pb-4 font-sans uppercase tracking-wider">Performance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-150">
+
+          {events_summary.length === 0 ? (
+            <div className="text-center py-12 text-gray-400 font-sans font-semibold">
+              No events registered yet.
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <div className="grid grid-cols-12 gap-4 px-6 pb-4 border-b border-black/10 font-serif font-semibold text-black">
+                <div className="col-span-5">Event</div>
+                <div className="col-span-2 text-center">Quizzes</div>
+                <div className="col-span-2 text-center">Date</div>
+                <div className="col-span-2 text-center">Attendees</div>
+                <div className="col-span-1 text-right pr-2">Performance</div>
+              </div>
+              <div className="flex flex-col gap-4 mt-6">
                 {events_summary.slice(0, 5).map((event) => (
-                  <tr key={event.id} className="group hover:bg-[#FAF8F5]/80 transition-all">
-                    <td className="py-4 font-bold text-base text-[#386641] tracking-wide font-sans">
-                      {event.title}
-                    </td>
-                    <td className="py-4 text-sm text-gray-600 font-sans font-medium">
+                  <div
+                    key={event.id}
+                    className="grid grid-cols-12 gap-4 items-center bg-[#E5E5E5] border border-[#2F3C36] rounded-xl px-6 py-4"
+                  >
+                    <div className="col-span-5">
+                      <div className="text-[#3A8458] font-sans font-medium text-lg truncate pr-2">
+                        {event.title}
+                      </div>
+                    </div>
+                    
+                    <div className="col-span-2 text-center text-[#3E4F45] text-sm">
                       {event.quizzes_count}
-                    </td>
-                    <td className="py-4 text-sm text-gray-500 font-sans font-medium">
+                    </div>
+
+                    <div className="col-span-2 text-center text-[#3E4F45] text-sm mb-0.5">
                       {new Date(event.event_date).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric"
                       })}
-                    </td>
-                    <td className="py-4 text-sm text-[#477250] font-bold font-sans">
-                      {event.attendees_count} Attendees
-                    </td>
-                    <td className="py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold font-sans uppercase tracking-wider ${
+                    </div>
+
+                    <div className="col-span-2 text-center">
+                      <span className="text-[#3A8458] text-sm font-medium">
+                        {event.attendees_count} Attendees
+                      </span>
+                    </div>
+
+                    <div className="col-span-1 flex justify-end">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                         event.performance === "High"
                           ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
                           : event.performance === "Average"
@@ -189,13 +201,13 @@ const Dashboard = () => {
                       }`}>
                         {event.performance}
                       </span>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
