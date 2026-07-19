@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-
+import logo from '../../assets/icons/logo.png';
 import sparklesImage from '../../assets/sparkles.png';
+import scqIcon from '../../assets/SCQ.png';
+import gwbsIcon from '../../assets/GWBS.png';
+import tabbpsIcon from '../../assets/TABBPS.png';
+import eiIcon from '../../assets/EI.png';
 
 const Landing = () => {
 
@@ -28,7 +32,7 @@ const Landing = () => {
       }}>
         {/* Brand Logo & Name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <img src="/logo.PNG" alt="Manomitra Logo" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+          <img src={logo} alt="Manomitra Logo" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
           <span style={{
             fontFamily: "'Playfair Display', serif",
             fontWeight: 500,
@@ -277,7 +281,7 @@ const Landing = () => {
                   justifyContent: 'center',
                   color: '#3E4F45'
                 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <span style={{
                   fontFamily: "'Raleway', sans-serif",
@@ -464,10 +468,11 @@ const Landing = () => {
                 justifyContent: 'center',
                 color: '#3E4F45'
               }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                  <path d="M2 12h20" />
-                </svg>
+                <img
+                  src={scqIcon}
+                  alt="SCQ Icon"
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                />
               </div>
               <h3 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '27px', lineHeight: '32px', fontWeight: 700, margin: 0, color: '#3E4F45' }}>SCQ</h3>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#617C6C', fontWeight: 700 }}>Self Concept</span>
@@ -508,11 +513,11 @@ const Landing = () => {
                 justifyContent: 'center',
                 color: '#3E4F45'
               }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                </svg>
+                <img
+                  src={gwbsIcon}
+                  alt="GWBS Icon"
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                />
               </div>
               <h3 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '27px', lineHeight: '32px', fontWeight: 700, margin: 0, color: '#3E4F45' }}>GWBS</h3>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#617C6C', fontWeight: 700 }}>General Well-Being</span>
@@ -553,10 +558,11 @@ const Landing = () => {
                 justifyContent: 'center',
                 color: '#3E4F45'
               }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6" />
-                  <path d="M12 22a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-                </svg>
+                <img
+                  src={tabbpsIcon}
+                  alt="TABBPS Icon"
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                />
               </div>
               <h3 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '27px', lineHeight: '32px', fontWeight: 700, margin: 0, color: '#3E4F45' }}>TABBPS</h3>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#617C6C', fontWeight: 700 }}>Type A/B Pattern</span>
@@ -597,10 +603,11 @@ const Landing = () => {
                 justifyContent: 'center',
                 color: '#3E4F45'
               }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
+                <img
+                  src={eiIcon}
+                  alt="EI Icon"
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                />
               </div>
               <h3 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '27px', lineHeight: '32px', fontWeight: 700, margin: 0, color: '#3E4F45' }}>EI</h3>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#617C6C', fontWeight: 700 }}>Emotional Intelligence</span>
@@ -648,9 +655,8 @@ const Landing = () => {
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', borderRight: '1px solid rgba(0,0,0,0.08)', paddingRight: '1rem' }}>
             <div style={{ color: '#3E4F45', marginTop: '0.2rem' }}>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="9" y1="9" x2="15" y2="15"></line>
-                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
               </svg>
             </div>
             <div>
@@ -674,7 +680,7 @@ const Landing = () => {
             <div>
               <h4 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '21.715px', lineHeight: '28px', fontWeight: 700, color: '#3E4F45', margin: 0 }}>Engaging Events</h4>
               <p style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#8C9D8D', marginTop: '0.35rem', fontWeight: 700, margin: 0 }}>
-                Monitor Individual & Class-wellbeing over time
+                Activities to promote student well-being
               </p>
             </div>
           </div>
@@ -689,7 +695,7 @@ const Landing = () => {
             <div>
               <h4 style={{ fontFamily: "'Raleway', sans-serif", fontSize: '21.715px', lineHeight: '28px', fontWeight: 700, color: '#3E4F45', margin: 0 }}>Safe & Confidential</h4>
               <p style={{ fontFamily: "'Raleway', sans-serif", fontSize: '15px', lineHeight: '18px', color: '#8C9D8D', marginTop: '0.35rem', fontWeight: 700, margin: 0 }}>
-                Monitor Individual & Class-wellbeing over time
+                Ensure privacy and security of data
               </p>
             </div>
           </div>
