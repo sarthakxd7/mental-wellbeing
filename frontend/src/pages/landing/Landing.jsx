@@ -358,7 +358,7 @@ const Landing = () => {
               }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '1.5rem' }}>
-                    <img src="/logo.PNG" alt="" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
+                    <img src={logo} alt="" style={{ width: '18px', height: '18px', objectFit: 'contain' }} />
                     <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>ManoMitra</span>
                   </div>
 
